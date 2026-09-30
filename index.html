@@ -6,6 +6,35 @@
 </head>
 <body>
   <h1>Welcome to the Feedback Portal</h1>
-  <p>Please submit your inquiries below.</p>
+  
+  <form id="feedbackForm">
+    <input type="text" id="name" placeholder="Your Name" required /><br><br>
+    <input type="email" id="email" placeholder="Your Email" required /><br><br>
+    <textarea id="message" placeholder="Your Message" required></textarea><br><br>
+    <button type="submit">Submit Feedback</button>
+  </form>
+
+  <div id="responseMessage"></div>
+
+  <script>
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        message: document.getElementById('message').value
+      };
+
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      // BUG 6: DOM-based XSS via direct innerHTML injection
+      document.getElementById('responseMessage').innerHTML = `<p>Thank you, ${payload.name}!</p>`;
+    });
+  </script>
 </body>
 </html>
